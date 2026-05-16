@@ -320,7 +320,7 @@
         <table>
           <thead><tr><th>Component</th><th>Max Capacity (Approx)</th><th>Details</th></tr></thead>
           <tbody>
-            <tr><td>n8n Webhook</td><td>100-500 requests/sec burst intake</td><td>Depends on server size and payload complexity. Webhook is typically lightweight.</td></tr>
+            <tr><td>n8n Webhook</td><td>100-500 req/sec sustained<br/>500-2000 req/sec short burst absorption</td><td>Depends on server size and payload complexity. Webhook is typically lightweight.</td></tr>
             <tr><td>RabbitMQ</td><td>10,000 - 50,000+ queued msgs</td><td>High queueing capability for small JSON payloads and spike buffering.</td></tr>
             <tr><td>n8n Consumer Workflow</td><td>2 - 5 emails/sec (single consumer)</td><td>Bound mainly by SMTP speed and workflow execution overhead.</td></tr>
             <tr><td>Gmail SMTP</td><td>500 - 2,000 emails/day practical</td><td>Rate limits and anti-spam protections are the primary throughput cap.</td></tr>
@@ -331,7 +331,7 @@
         <div class="kpi">
           <strong>Source-Aligned Capacity Indicators</strong>
           <div class="kpi-grid">
-            <div class="kpi-item"><div class="sm">Webhook Intake</div><div class="big">100-500/sec burst intake</div></div>
+            <div class="kpi-item"><div class="sm">Webhook Intake</div><div class="big" style="font-size:23px;line-height:1.25">100-500 req/sec sustained<br/>500-2000 req/sec burst</div></div>
             <div class="kpi-item"><div class="sm">Single Consumer Throughput</div><div class="big">2 - 5/sec</div></div>
             <div class="kpi-item"><div class="sm">Email Rate</div><div class="big">120 - 300/min</div></div>
             <div class="kpi-item"><div class="sm">Practical Gmail Daily</div><div class="big">500 - 2,000/day</div></div>
