@@ -238,19 +238,19 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>1. TABLE OF CONTENTS</h2>
+        <h2>TABLE OF CONTENTS</h2>
         <div class="card">
           <ol class="list" style="padding-left:22px">
-            <li>2. Architecture Overview</li>
-            <li>3. Capacity & Concurrency Analysis</li>
-            <li>4. Assumed Infrastructure</li>
-            <li>5. Burst Handling</li>
-            <li>6. Accuracy & Reliability</li>
-            <li>7. Advantages</li>
-            <li>8. Bottlenecks & Limitations</li>
-            <li>9. Recommendations</li>
-            <li>10. Concurrency Situations & Use Cases</li>
-            <li>11. Conclusion</li>
+            <li>Architecture Overview</li>
+            <li>Capacity & Concurrency Analysis</li>
+            <li>Assumed Infrastructure</li>
+            <li>Burst Handling</li>
+            <li>Accuracy & Reliability</li>
+            <li>Advantages</li>
+            <li>Bottlenecks & Limitations</li>
+            <li>Recommendations</li>
+            <li>Concurrency Situations & Use Cases</li>
+            <li>Conclusion</li>
           </ol>
         </div>
       </div>
@@ -261,7 +261,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>2. ARCHITECTURE OVERVIEW</h2>
+        <h2>1. ARCHITECTURE OVERVIEW</h2>
         <p class="desc" style="font-size:17px">Email notifications are triggered only after a payment is successful. Spring Boot sends the payment-success event to n8n webhook, which publishes messages to RabbitMQ. n8n consumer workflow then reads the queue and sends emails using Gmail SMTP.</p>
         <div class="card" style="margin-top:12px">
           <h4>Example payload from payment backend to n8n webhook (after successful payment)</h4>
@@ -314,7 +314,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>3. CAPACITY & CONCURRENCY ANALYSIS</h2>
+        <h2>2. CAPACITY & CONCURRENCY ANALYSIS</h2>
 
         <h3>2.1 Component Wise Capacity</h3>
         <table>
@@ -345,7 +345,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>4. ASSUMED INFRASTRUCTURE</h2>
+        <h2>3. ASSUMED INFRASTRUCTURE</h2>
 
         <div class="cols2">
           <div class="card">
@@ -389,7 +389,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>5. BURST HANDLING</h2>
+        <h2>4. BURST HANDLING</h2>
 
         <h3>3.1 Burst Scenario Example</h3>
         <p style="font-size:16px;color:#30476f">If 1,000 payments happen in a short interval, backend remains responsive and RabbitMQ absorbs the spike. Email processing continues gradually based on consumer + SMTP throughput.</p>
@@ -421,7 +421,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>6. ACCURACY & RELIABILITY</h2>
+        <h2>5. ACCURACY & RELIABILITY</h2>
 
         <div class="cols2" style="grid-template-columns: 1.2fr 1fr; gap:14px;">
           <div class="card">
@@ -467,7 +467,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>7. ADVANTAGES</h2>
+        <h2>6. ADVANTAGES</h2>
 
         <div class="cols2">
           <div class="card">
@@ -497,7 +497,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>8. BOTTLENECKS & LIMITATIONS</h2>
+        <h2>7. BOTTLENECKS & LIMITATIONS</h2>
 
         <h3>5.1 Major Bottlenecks</h3>
         <table>
@@ -529,7 +529,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>9. RECOMMENDATIONS</h2>
+        <h2>8. RECOMMENDATIONS</h2>
 
         <div class="cols2">
           <div class="card">
@@ -569,7 +569,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>10. CONCURRENCY SITUATIONS & USE CASES</h2>
+        <h2>9. CONCURRENCY SITUATIONS & USE CASES</h2>
 
         <h3>9.1 Practical Concurrency Examples</h3>
         <table>
@@ -641,7 +641,7 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>11. CONCLUSION</h2>
+        <h2>10. CONCLUSION</h2>
 
         <div class="card">
           <h4>Final Assessment</h4>
