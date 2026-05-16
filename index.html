@@ -1,0 +1,641 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>N8N Email Notification Architecture Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    :root {
+      --blue: #0e4ed3;
+      --blue-dark: #0f2d66;
+      --line: #d8e4f8;
+      --text: #16284c;
+      --muted: #5a6c8f;
+      --bg: #f3f7ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 18px;
+    }
+    .deck {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .page {
+      position: relative;
+      background: #fff;
+      min-height: 760px;
+      border: 1px solid #cfdcf4;
+      padding: 24px 24px 56px;
+      overflow: hidden;
+    }
+    .wm {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .wm img {
+      width: 78%;
+      filter: brightness(0.3) contrast(0.5) blur(1.8px);
+      opacity: 0.045;
+    }
+    .inner { position: relative; z-index: 1; }
+    .top-logo {
+      width: 120px;
+      margin-bottom: 8px;
+    }
+    h1, h2, h3 { margin: 0; }
+    h1 {
+      font-size: 50px;
+      line-height: 1.02;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+    h2 {
+      font-size: 34px;
+      color: var(--blue);
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    h3 {
+      font-size: 23px;
+      color: var(--blue);
+      font-weight: 800;
+      margin: 16px 0 10px;
+    }
+    .sub {
+      font-size: 29px;
+      font-weight: 700;
+      color: var(--blue-dark);
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .flow {
+      font-size: 33px;
+      color: var(--blue);
+      font-weight: 500;
+      line-height: 1.35;
+      margin: 16px 0;
+    }
+    .desc { font-size: 24px; line-height: 1.42; color: #243b66; }
+    .divider { height: 3px; width: 80px; background: var(--blue); margin: 14px 0 20px; }
+
+    .mini-flow {
+      display: grid;
+      grid-template-columns: 1fr 36px 1fr 36px 1fr 36px 1fr 36px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .box {
+      border: 1px solid #bfd3f5;
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 132px;
+      text-align: center;
+      background: #fff;
+      font-size: 14px;
+    }
+    .box .pic {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 8px;
+      border: 1px solid #c5daf9;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      font-size: 22px;
+      background: #f7fbff;
+    }
+    .box b { display: block; font-size: 16px; margin-bottom: 5px; color: var(--blue-dark); }
+    .arrow { text-align: center; color: var(--blue); font-size: 26px; font-weight: 800; }
+
+    .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .card {
+      border: 1px solid #c8daf8;
+      border-radius: 12px;
+      padding: 13px;
+      background: #fff;
+    }
+    .card h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--blue);
+      font-weight: 800;
+    }
+    .list { margin: 0; padding-left: 18px; }
+    .list li { margin: 8px 0; font-size: 16px; line-height: 1.38; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    th {
+      background: var(--blue);
+      color: #fff;
+      text-align: left;
+      padding: 9px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    td {
+      border: 1px solid #d4e0f5;
+      padding: 9px;
+      vertical-align: top;
+      color: #1f365f;
+    }
+    .kpi {
+      border: 1px solid #bfd5f7;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .kpi-item {
+      border-right: 1px solid #d8e4f8;
+      padding-right: 8px;
+    }
+    .kpi-item:last-child { border-right: none; }
+    .kpi-item .big { font-size: 31px; font-weight: 800; color: var(--blue); }
+    .kpi-item .sm { font-size: 12px; color: var(--muted); }
+
+    .foot {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 34px;
+      background: var(--blue);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      z-index: 2;
+    }
+
+    @media (max-width: 1200px) {
+      .deck { grid-template-columns: 1fr; }
+      .page { min-height: auto; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .mini-flow { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <div class="sub">N8N EMAIL NOTIFICATION ARCHITECTURE ANALYSIS</div>
+        <div class="divider"></div>
+        <p class="desc">Detailed analysis of concurrency, capacity, limitations, reliability, bottlenecks, and burst handling in a backend-centered design where payment flow and email flow are handled separately.</p>
+
+        <div class="mini-flow">
+          <div class="box"><div class="pic"><i class="fa-solid fa-server"></i></div><b>Spring Boot Backend</b>Payment Success Event</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-diagram-project"></i></div><b>n8n Webhook</b>Receives Event via HTTP</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-box-open"></i></div><b>RabbitMQ</b>Message Queued</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-gears"></i></div><b>n8n Consumer Workflow</b>Processes Message</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-envelope"></i></div><b>Gmail</b>Email Delivered</div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>01</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>1. TABLE OF CONTENTS</h2>
+        <div class="card">
+          <ol class="list" style="padding-left:22px">
+            <li>Architecture Overview</li>
+            <li>Capacity & Concurrency Analysis</li>
+            <li>Burst Handling</li>
+            <li>Accuracy & Reliability</li>
+            <li>Advantages</li>
+            <li>Bottlenecks & Limitations</li>
+            <li>Recommendations</li>
+            <li>Concurrency Situations & Use Cases</li>
+            <li>Conclusion</li>
+          </ol>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>02</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>2. ARCHITECTURE OVERVIEW</h2>
+        <p class="desc" style="font-size:17px">Email notifications are triggered only after a payment is successful. Spring Boot sends the payment-success event to n8n webhook, which publishes messages to RabbitMQ. n8n consumer workflow then reads the queue and sends emails using Gmail SMTP.</p>
+        <div class="card" style="margin-top:12px">
+          <h4>Example payload from payment backend to n8n webhook (after successful payment)</h4>
+<pre style="margin:0;font-size:14px;line-height:1.45;white-space:pre-wrap;color:#1f365f">{
+  "email": "abc@gmail.com",
+  "merchantOrderRef": "ORD-1001",
+  "amount": 501,
+  "gateway": "EASEBUZZ"
+}</pre>
+        </div>
+
+        <div class="mini-flow" style="margin-top:18px">
+          <div class="box"><div class="pic"><i class="fa-solid fa-server"></i></div><b>Spring Boot Backend</b>Handles payment event</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-diagram-project"></i></div><b>n8n Webhook</b>Validates and transforms payload</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-box-open"></i></div><b>RabbitMQ</b>Buffers and stores messages</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-gears"></i></div><b>n8n Consumer</b>Processes queue and ACKs after success</div>
+          <div class="arrow">→</div>
+          <div class="box"><div class="pic"><i class="fa-solid fa-envelope"></i></div><b>Gmail SMTP</b>Routes and delivers email</div>
+        </div>
+
+        <div class="cols2" style="margin-top:20px">
+          <div class="card">
+            <h4>Key Characteristics</h4>
+            <ul class="list">
+              <li>Asynchronous processing</li>
+              <li>Queue-based buffering</li>
+              <li>Decoupled components</li>
+              <li>Retry-capable workflow behavior</li>
+              <li>Independent consumer-side scaling</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Best For</h4>
+            <ul class="list">
+              <li>Startup and MVP payment systems</li>
+              <li>Notification-heavy applications</li>
+              <li>Systems with bursty payment traffic</li>
+              <li>Use cases requiring fast payment API response</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>03</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>3. CAPACITY & CONCURRENCY ANALYSIS</h2>
+
+        <h3>2.1 Component Wise Capacity</h3>
+        <table>
+          <thead><tr><th>Component</th><th>Max Capacity (Approx)</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>n8n Webhook</td><td>500 - 2,000 requests/sec</td><td>Depends on server size and payload complexity. Webhook is typically lightweight.</td></tr>
+            <tr><td>RabbitMQ</td><td>10,000 - 50,000+ queued msgs</td><td>High queueing capability for small JSON payloads and spike buffering.</td></tr>
+            <tr><td>n8n Consumer Workflow</td><td>2 - 5 emails/sec (single consumer)</td><td>Bound mainly by SMTP speed and workflow execution overhead.</td></tr>
+            <tr><td>Gmail SMTP</td><td>500 - 2,000 emails/day practical</td><td>Rate limits and anti-spam protections are the primary throughput cap.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>2.2 End-to-End Capacity (with Gmail)</h3>
+        <div class="kpi">
+          <strong>Source-Aligned Capacity Indicators</strong>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="sm">Webhook Intake</div><div class="big">500 - 2,000/sec</div></div>
+            <div class="kpi-item"><div class="sm">Single Consumer Throughput</div><div class="big">2 - 5/sec</div></div>
+            <div class="kpi-item"><div class="sm">Email Rate</div><div class="big">120 - 300/min</div></div>
+            <div class="kpi-item"><div class="sm">Practical Gmail Daily</div><div class="big">500 - 2,000/day</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>04</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>4. BURST HANDLING</h2>
+
+        <h3>3.1 Burst Scenario Example</h3>
+        <p style="font-size:16px;color:#30476f">If 1,000 payments happen in a short interval, backend remains responsive and RabbitMQ absorbs the spike. Email processing continues gradually based on consumer + SMTP throughput.</p>
+
+        <table>
+          <thead><tr><th>Component</th><th>Behavior During Burst</th><th>What Happens</th></tr></thead>
+          <tbody>
+            <tr><td>n8n Webhook</td><td>Handles high event ingress</td><td>No immediate issue for moderate server sizes.</td></tr>
+            <tr><td>RabbitMQ</td><td>Stores all messages durably</td><td>Queue backlog builds temporarily.</td></tr>
+            <tr><td>n8n Consumer</td><td>Processes at ~2-5 emails/sec (single consumer)</td><td>Backlog drain may take minutes.</td></tr>
+            <tr><td>Gmail</td><td>Rate-limited email sender</td><td>Primary throughput bottleneck.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>3.2 Queue Backlog Growth Example</h3>
+        <div class="card">
+          <p style="margin:0 0 10px;font-size:16px">Assumption: Incoming 50 msgs/sec, processing 5 msgs/sec.</p>
+          <table>
+            <thead><tr><th>Incoming</th><th>Processing</th><th>Backlog Growth</th></tr></thead>
+            <tbody><tr><td>50 msg/sec</td><td>5 msg/sec</td><td>45 msg/sec</td></tr></tbody>
+          </table>
+          <p style="margin:10px 0 0;font-weight:700;color:#1347ab">After 1 minute: 2,700 pending messages. After 10 minutes: 27,000 pending messages (if sustained).</p>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>05</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>5. ACCURACY & RELIABILITY</h2>
+
+        <div class="cols2" style="grid-template-columns: 1.2fr 1fr; gap:14px;">
+          <div class="card">
+            <h4>At-Least-Once Delivery</h4>
+            <p style="font-size:15px">Messages will be delivered at least once. Duplicates are possible after retries or crash-recovery paths.</p>
+            <h4>Message Persistence</h4>
+            <p style="font-size:15px">RabbitMQ stores messages durably. Messages are not lost on typical service restart scenarios.</p>
+            <h4>Retry Mechanism</h4>
+            <p style="font-size:15px">n8n workflows can retry failed sends. Recommended retry depth: 3-5.</p>
+            <h4>Dead Letter Queue</h4>
+            <p style="font-size:15px">Failed messages after max retries should move to DLQ for manual inspection.</p>
+            <h4>Email Delivery Accuracy</h4>
+            <p style="font-size:15px">Delivery inbox rate varies by sender reputation/content. Gmail can mark some traffic as spam.</p>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:12px">
+              <h4>Reliability Summary</h4>
+              <p style="margin:0 0 8px;font-size:15px">Reliability expectation (if configured correctly):</p>
+              <ul class="list" style="font-size:14px;line-height:1.45;color:#48618e">
+                <li>Queue persistence: High</li>
+                <li>Message durability: High</li>
+                <li>Burst absorption: High</li>
+                <li>Email delivery speed: Medium</li>
+                <li>Email provider reliability: Medium with Gmail</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>Data Safety</h4>
+              <ul class="list" style="font-size:15px">
+                <li>No data loss when queue durability and ACK strategy are correct.</li>
+                <li>Messages stay safe during temporary consumer downtime.</li>
+                <li>Idempotency key (`paymentId + eventType`) recommended to reduce duplicate effects.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>06</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>6. ADVANTAGES</h2>
+
+        <div class="cols2">
+          <div class="card">
+            <h4>System-Level Benefits</h4>
+            <ul class="list">
+              <li><b>Backend protection:</b> payment API remains responsive during SMTP delays or failures.</li>
+              <li><b>Asynchronous decoupling:</b> payment completion is separated from email send time.</li>
+              <li><b>Burst absorption:</b> RabbitMQ safely buffers sudden high-volume payment events.</li>
+              <li><b>Reliable retry handling:</b> failed sends can be retried without blocking payment flow.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Operational Benefits</h4>
+            <ul class="list">
+              <li><b>Low operational complexity:</b> practical to run on a single VM for startup stages.</li>
+              <li><b>Cost efficiency:</b> RabbitMQ and n8n can be self-hosted with minimal licensing cost.</li>
+              <li><b>Scalable queue layer:</b> queueing handles spikes better than direct synchronous email.</li>
+              <li><b>MVP-ready foundation:</b> suitable for moderate merchant traffic and notification workloads.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>07</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>7. BOTTLENECKS & LIMITATIONS</h2>
+
+        <h3>5.1 Major Bottlenecks</h3>
+        <table>
+          <thead><tr><th>Bottleneck</th><th>Impact</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Gmail Sending Limit</td><td>Very High</td><td>Practical limit around 500-2,000 emails/day depending on account type.</td></tr>
+            <tr><td>Gmail Per-Second Constraint</td><td>Very High</td><td>Low sustained per-second rate; anti-spam checks can trigger blocks.</td></tr>
+            <tr><td>n8n Consumer Single Threaded Path</td><td>High</td><td>One workflow execution path limits throughput under burst conditions.</td></tr>
+            <tr><td>Server Resources</td><td>Medium</td><td>CPU and memory cap total concurrent workflow execution.</td></tr>
+            <tr><td>Network Latency</td><td>Low-Medium</td><td>Affects webhook receive latency and SMTP round trips.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>5.2 Other Limitations</h3>
+        <ul class="list">
+          <li>Gmail is not ideal for large-scale transactional notification workloads.</li>
+          <li>Heavy burst traffic creates backlog and increases delivery latency.</li>
+          <li>n8n is automation-first and not a specialized ultra-high-throughput worker runtime.</li>
+          <li>Under strict SLA requirements, dedicated email infrastructure is preferred.</li>
+        </ul>
+
+        <h3>5.3 Recommended Evolution</h3>
+        <p style="font-size:16px;line-height:1.45;margin:0">Current: Backend &rarr; n8n Webhook &rarr; RabbitMQ &rarr; n8n Consumer &rarr; Gmail<br/>Future: Backend &rarr; n8n Webhook &rarr; RabbitMQ &rarr; Multiple Workers &rarr; Amazon SES</p>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>08</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>8. RECOMMENDATIONS</h2>
+
+        <div class="cols2">
+          <div class="card">
+            <h4>Immediate (Current Setup)</h4>
+            <ul class="list">
+              <li>Keep ACK only after successful email send.</li>
+              <li>Use idempotency key: <b>paymentId + eventType</b>.</li>
+              <li>Add monitoring for queue depth, consumer lag, and SMTP failures.</li>
+              <li>Set controlled retries (3-5) for failed workflow executions.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Short-Term Scaling</h4>
+            <ul class="list">
+              <li>Increase consumers from 1 to 3-5 for faster queue drain.</li>
+              <li>Introduce <b>main_queue</b>, <b>retry_queue</b>, and <b>dead_letter_queue</b>.</li>
+              <li>Use lightweight templates for better processing throughput.</li>
+              <li>Set queue and worker alerts for burst scenarios.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4>Production-Grade Direction</h4>
+          <ul class="list">
+            <li>Replace Gmail SMTP with Amazon SES for higher throughput and concurrency.</li>
+            <li>Move to multiple worker architecture for better resiliency under spike traffic.</li>
+            <li>Track SLA metrics: delivery latency, success rate, retry rate, and backlog drain time.</li>
+            <li>Keep RabbitMQ + n8n on dedicated infrastructure with sufficient CPU/RAM headroom.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>09</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>9. CONCURRENCY SITUATIONS & USE CASES</h2>
+
+        <h3>9.1 Practical Concurrency Examples</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Situation</th>
+              <th>What Happens in System</th>
+              <th>Expected Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>100 merchants payment success in short window</td>
+              <td>Webhook burst accepted, RabbitMQ queues events quickly, consumer starts draining immediately</td>
+              <td>Very safe; minimal delay in email delivery</td>
+            </tr>
+            <tr>
+              <td>300 merchants payment success at same time</td>
+              <td>Queue depth rises temporarily, backend remains responsive, consumer and Gmail process gradually</td>
+              <td>Comfortable; short delivery delay possible during peak minute</td>
+            </tr>
+            <tr>
+              <td>500 merchants payment success burst</td>
+              <td>RabbitMQ remains stable, queue backlog grows if ingress exceeds email send rate</td>
+              <td>Moderate operational risk; noticeable notification delay</td>
+            </tr>
+            <tr>
+              <td>1000+ merchants payment success burst</td>
+              <td>Backend and queue stay stable, Gmail and single consumer become bottleneck</td>
+              <td>High delay risk; delivery can take several minutes unless consumers are scaled</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Backlog Illustration</h4>
+          <p style="font-size:16px;line-height:1.45;margin:0">
+            If incoming rate is <b>50 msgs/sec</b> and processing rate is <b>5 msgs/sec</b>, backlog grows by <b>45 msgs/sec</b>.<br />
+            After 1 minute: <b>2,700</b> pending messages. RabbitMQ can store this safely, but delivery time increases until backlog drains.
+          </p>
+        </div>
+
+        <h3>9.2 Common Use Cases</h3>
+        <div class="cols2">
+          <div class="card">
+            <h4>Suitable Use Cases</h4>
+            <ul class="list">
+              <li>Payment confirmation emails to merchants/customers.</li>
+              <li>Startup and MVP payment systems with moderate burst traffic.</li>
+              <li>Notification workflows where payment API must stay fast.</li>
+              <li>Queue-first systems requiring retry and delivery safety.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Less Suitable Use Cases</h4>
+            <ul class="list">
+              <li>Ultra-high volume transactional email at enterprise scale using Gmail.</li>
+              <li>Strict low-latency SLA where every email must be near-instant.</li>
+              <li>Millions of daily notifications without provider upgrade and worker scaling.</li>
+              <li>Regulated workloads needing advanced deliverability governance.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>10</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>10. CONCLUSION</h2>
+
+        <div class="card">
+          <h4>Final Assessment</h4>
+          <p style="font-size:16px;line-height:1.5;margin:0">
+            This is a practical backend-centered architecture where payment flow and email notification flow are handled separately.
+            After successful payment, the backend triggers the email event path through n8n and RabbitMQ, which protects payment responsiveness and improves operational stability under burst traffic.
+          </p>
+        </div>
+
+        <div class="cols2" style="margin-top:14px">
+          <div class="card">
+            <h4>Summary of Strengths</h4>
+            <ul class="list">
+              <li>Fast payment response with separate email processing path.</li>
+              <li>Reliable queue buffering and retry-oriented handling.</li>
+              <li>Low-cost, MVP-friendly deployment model.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Summary of Constraints</h4>
+            <ul class="list">
+              <li>Gmail throughput and daily limits cap scaling.</li>
+              <li>Single-consumer execution increases delay in large bursts.</li>
+              <li>Enterprise SLA workloads require stronger mail infrastructure.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4>Closing Direction</h4>
+          <p style="font-size:16px;line-height:1.5;margin:0">
+            Follow the recommendation path: scale consumers, add retry/DLQ patterns, and migrate to Amazon SES for higher throughput, stronger deliverability, and lower operational risk in production growth stages.
+          </p>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>11</span></div>
+    </section>
+
+  </main>
+</body>
+</html>
+
