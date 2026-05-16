@@ -243,6 +243,7 @@
           <ol class="list" style="padding-left:22px">
             <li>Architecture Overview</li>
             <li>Capacity & Concurrency Analysis</li>
+            <li>Assumed Infrastructure</li>
             <li>Burst Handling</li>
             <li>Accuracy & Reliability</li>
             <li>Advantages</li>
@@ -344,7 +345,51 @@
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>4. BURST HANDLING</h2>
+        <h2>4. ASSUMED INFRASTRUCTURE</h2>
+
+        <div class="cols2">
+          <div class="card">
+            <h4>Backend</h4>
+            <p style="font-size:16px;line-height:1.45;margin:0">Separate existing instance.</p>
+
+            <h4 style="margin-top:14px">Queue/Workflow Server</h4>
+            <p style="font-size:16px;line-height:1.45;margin:0 0 10px">Recommended:</p>
+            <table>
+              <thead><tr><th>Resource</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td>CPU</td><td>2 vCPU</td></tr>
+                <tr><td>RAM</td><td>4 GB</td></tr>
+                <tr><td>Disk</td><td>SSD</td></tr>
+                <tr><td>OS</td><td>Ubuntu</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h4>Components Hosted</h4>
+            <ul class="list">
+              <li>RabbitMQ</li>
+              <li>n8n</li>
+              <li>consumer workflows</li>
+            </ul>
+
+            <h4 style="margin-top:14px">Capacity Reality</h4>
+            <ul class="list">
+              <li>RabbitMQ is typically not the bottleneck in this setup.</li>
+              <li>Primary limits are SMTP provider speed and consumer throughput.</li>
+              <li>Performance varies with template complexity, payload size, and VM health.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>05</span></div>
+    </section>
+
+    <section class="page">
+      <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
+      <div class="inner">
+        <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
+        <h2>5. BURST HANDLING</h2>
 
         <h3>3.1 Burst Scenario Example</h3>
         <p style="font-size:16px;color:#30476f">If 1,000 payments happen in a short interval, backend remains responsive and RabbitMQ absorbs the spike. Email processing continues gradually based on consumer + SMTP throughput.</p>
@@ -369,14 +414,14 @@
           <p style="margin:10px 0 0;font-weight:700;color:#1347ab">After 1 minute: 2,700 pending messages. After 10 minutes: 27,000 pending messages (if sustained).</p>
         </div>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>05</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>06</span></div>
     </section>
 
     <section class="page">
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>5. ACCURACY & RELIABILITY</h2>
+        <h2>6. ACCURACY & RELIABILITY</h2>
 
         <div class="cols2" style="grid-template-columns: 1.2fr 1fr; gap:14px;">
           <div class="card">
@@ -415,14 +460,14 @@
           </div>
         </div>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>06</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>07</span></div>
     </section>
 
     <section class="page">
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>6. ADVANTAGES</h2>
+        <h2>7. ADVANTAGES</h2>
 
         <div class="cols2">
           <div class="card">
@@ -445,14 +490,14 @@
           </div>
         </div>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>07</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>08</span></div>
     </section>
 
     <section class="page">
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>7. BOTTLENECKS & LIMITATIONS</h2>
+        <h2>8. BOTTLENECKS & LIMITATIONS</h2>
 
         <h3>5.1 Major Bottlenecks</h3>
         <table>
@@ -477,14 +522,14 @@
         <h3>5.3 Recommended Evolution</h3>
         <p style="font-size:16px;line-height:1.45;margin:0">Current: Backend &rarr; n8n Webhook &rarr; RabbitMQ &rarr; n8n Consumer &rarr; Gmail<br/>Future: Backend &rarr; n8n Webhook &rarr; RabbitMQ &rarr; Multiple Workers &rarr; Amazon SES</p>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>08</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>09</span></div>
     </section>
 
     <section class="page">
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>8. RECOMMENDATIONS</h2>
+        <h2>9. RECOMMENDATIONS</h2>
 
         <div class="cols2">
           <div class="card">
@@ -517,14 +562,14 @@
           </ul>
         </div>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>09</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>10</span></div>
     </section>
 
     <section class="page">
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>9. CONCURRENCY SITUATIONS & USE CASES</h2>
+        <h2>10. CONCURRENCY SITUATIONS & USE CASES</h2>
 
         <h3>9.1 Practical Concurrency Examples</h3>
         <table>
@@ -589,14 +634,14 @@
           </div>
         </div>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>10</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>11</span></div>
     </section>
 
     <section class="page">
       <div class="wm"><img src="sabbpe-logo.png" alt="Watermark" /></div>
       <div class="inner">
         <img class="top-logo" src="sabbpe-logo.png" alt="SABBPE" />
-        <h2>10. CONCLUSION</h2>
+        <h2>11. CONCLUSION</h2>
 
         <div class="card">
           <h4>Final Assessment</h4>
@@ -632,7 +677,7 @@
           </p>
         </div>
       </div>
-      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>11</span></div>
+      <div class="foot"><span>SABBPE TECHNOLOGIES</span><span>12</span></div>
     </section>
 
   </main>
